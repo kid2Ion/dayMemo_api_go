@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
+	"github.com/hiroki-kondo-git/dayMemo_api_go/firebase/firebase.go"
 	"github.com/labstack/echo"
 )
 

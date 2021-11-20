@@ -1,4 +1,4 @@
-package myfirebase
+package testfirebase
 
 import (
 	"context"

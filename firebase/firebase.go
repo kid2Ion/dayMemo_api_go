@@ -1,4 +1,4 @@
-package firebase
+package myfirebase
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"log"
 
 	firebase "firebase.google.com/go"
-	"github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
+	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
 	"google.golang.org/api/option"
 )
 
@@ -24,6 +24,6 @@ func InitFirebaseAuth() {
 	if err != nil {
 		log.Fatalf("error getting Auth clint: %v`\n", err)
 	}
-	firebase.CreateUser(ctx, client)
+	myfirebase.CreateUser(ctx, client)
 	// defer client.Close()
 }

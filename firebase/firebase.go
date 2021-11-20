@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 
+	testfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/test"
+
 	firebase "firebase.google.com/go"
-	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
 	"google.golang.org/api/option"
 )
 
@@ -24,6 +25,6 @@ func InitFirebaseAuth() {
 	if err != nil {
 		log.Fatalf("error getting Auth clint: %v`\n", err)
 	}
-	myfirebase.CreateUser(ctx, client)
+	testfirebase.CreateUser(ctx, client)
 	// defer client.Close()
 }

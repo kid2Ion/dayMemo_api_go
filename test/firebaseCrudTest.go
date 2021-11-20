@@ -9,7 +9,7 @@ import (
 
 func CreateUser(ctx context.Context, client *auth.Client) *auth.UserRecord {
 	params := (&auth.UserToCreate{}).
-		Email("user@example.com2").
+		Email("user@example.com3").
 		Password("examplepass2")
 	u, err := client.CreateUser(ctx, params)
 	if err != nil {

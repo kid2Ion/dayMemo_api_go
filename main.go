@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
+	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
 	"github.com/labstack/echo"
 )
 
@@ -14,6 +14,6 @@ func main() {
 }
 
 func hello(ctx echo.Context) error {
-	firebase.InitFirebaseAuth()
+	myfirebase.InitFirebaseAuth()
 	return ctx.String(http.StatusOK, "hello dayMemo")
 }

@@ -1,12 +1,13 @@
-package firebase
+package myfirebase
 
 import (
 	"context"
 	"fmt"
 	"log"
 
+	testfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/test"
+
 	firebase "firebase.google.com/go"
-	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
 )
 
@@ -24,18 +25,6 @@ func InitFirebaseAuth() {
 	if err != nil {
 		log.Fatalf("error getting Auth clint: %v`\n", err)
 	}
-	createUser(ctx, client)
+	testfirebase.CreateUser(ctx, client)
 	// defer client.Close()
-}
-
-func createUser(ctx context.Context, client *auth.Client) *auth.UserRecord {
-	params := (&auth.UserToCreate{}).
-		Email("user@example.com2").
-		Password("examplepass2")
-	u, err := client.CreateUser(ctx, params)
-	if err != nil {
-		log.Fatalf("error creating user: %v\n", err)
-	}
-	log.Printf("Successfully created user: %#v\n", u.UserInfo)
-	return u
 }

@@ -10,13 +10,13 @@ func CreateMemory(ctx echo.Context) error {
 	return ctx.String(http.StatusOK, "successfully create memory")
 }
 
-func EditMemory(ctx echo.Context) error {
+func UpdateMemory(ctx echo.Context) error {
 	id := ctx.Param("id")
 	msg := "successfully edit memory id:" + id
 	return ctx.String(http.StatusOK, msg)
 }
 
-func GetMemoriesList(ctx echo.Context) error {
+func GetMemories(ctx echo.Context) error {
 	year_month := ctx.QueryParam("year_month")
 	msg := "successfully get memories list year_month:" + year_month
 	return ctx.String(http.StatusOK, msg)

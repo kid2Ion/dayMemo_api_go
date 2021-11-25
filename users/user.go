@@ -10,7 +10,7 @@ func CreateUser(ctx echo.Context) error {
 	return ctx.String(http.StatusOK, "successfully create user")
 }
 
-func EditUser(ctx echo.Context) error {
+func UpdateUser(ctx echo.Context) error {
 	id := ctx.Param("id")
 	msg := "successfully edit user id:" + id
 	return ctx.String(http.StatusOK, msg)

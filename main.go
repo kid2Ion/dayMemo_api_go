@@ -3,14 +3,18 @@ package main
 import (
 	"net/http"
 
+	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	memory "github.com/hiroki-kondo-git/dayMemo_api_go/memories"
 	user "github.com/hiroki-kondo-git/dayMemo_api_go/users"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main() {
 	e := echo.New()
 	e.GET("/", hello)
+	api := e.Group("/api")
+	api.Use(middleware.JWTWithConfig(auth.Config))
 	// memory
 	e.POST("memories/new", memory.CreateMemory)
 	e.PUT("/memories/:id", memory.UpdateMemory)

@@ -1,14 +1,14 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "time"
 
 type User struct {
-	gorm.Model
 	ID          int    `json:"id" gorm:"praimaly_key"`
 	Name        string `json:"name"`
 	IconUrl     string `json:"icon_url"`
 	MailAddress string `json:"mail_address"`
 	Password    string `json:"password"`
+	CreatedAt   time.Time
 }
 
 func CreateUser(user *User) {

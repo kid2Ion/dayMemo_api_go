@@ -1,6 +1,9 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 type User struct {
+	gorm.Model
 	ID          int    `json:"id" gorm:"praimaly_key"`
 	Name        string `json:"name"`
 	IconUrl     string `json:"icon_url"`
@@ -15,5 +18,6 @@ func CreateUser(user *User) {
 func FindUser(u *User) User {
 	var user User
 	db.Where(u).First(&user)
+
 	return user
 }

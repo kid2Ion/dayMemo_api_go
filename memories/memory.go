@@ -2,19 +2,24 @@ package memory
 
 import (
 	"net/http"
-	"strconv"
 
-	"github.com/hiroki-kondo-git/dayMemo_api_go/auth"
+	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
 )
 
 func CreateMemory(ctx echo.Context) error {
 	memory := new(model.Memory)
-	// リクエストボディからuser情報取得
+	// リクエストボディからmemory情報取得
 	if err := ctx.Bind(memory); err != nil {
 		return err
 	}
+	// token→memory{UID}=user{ID}
+	uid, err := myfirebase.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+	memory.ID = uid
 
 	if memory.Title == "" {
 		return &echo.HTTPError{
@@ -23,21 +28,18 @@ func CreateMemory(ctx echo.Context) error {
 		}
 	}
 
-	// token→memory{UID}=user{ID}
-	uid := auth.UserIDFromToken(ctx)
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == 0 {
-		return echo.ErrNotFound
-	}
-
-	memory.UID = uid
 	model.CreateMemory(memory)
 
 	return ctx.JSON(http.StatusOK, memory)
 }
 
 func GetMemories(ctx echo.Context) error {
-	uid := auth.UserIDFromToken(ctx)
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == 0 {
+	uid, err := myfirebase.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+
+	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
 		return echo.ErrNotFound
 	}
 	// todo 月ごとのmemory取得の実装
@@ -68,15 +70,16 @@ func GetMemories(ctx echo.Context) error {
 // }
 
 func DeleteMemory(ctx echo.Context) error {
-	uid := auth.UserIDFromToken(ctx)
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == 0 {
+	uid, err := myfirebase.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+
+	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
 		return echo.ErrNotFound
 	}
 
-	memoryID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		return echo.ErrNotFound
-	}
+	memoryID := ctx.Param("id")
 
 	if err := model.DeleteMemory(&model.Memory{ID: memoryID, UID: uid}); err != nil {
 		return echo.ErrNotFound

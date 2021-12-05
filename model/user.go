@@ -3,10 +3,10 @@ package model
 import "time"
 
 type User struct {
-	ID          int    `json:"id" gorm:"praimaly_key"`
+	ID          string `json:"id" gorm:"praimaly_key"`
+	MailAddress string `json:"mail_address"`
 	Name        string `json:"name"`
 	IconUrl     string `json:"icon_url"`
-	MailAddress string `json:"mail_address"`
 	Password    string `json:"password"`
 	CreatedAt   time.Time
 }

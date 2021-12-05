@@ -14,6 +14,8 @@ func init() {
 	if err != nil {
 		panic("failed to connect datebase")
 	}
+	// defaultでdb名が複数形になるのを阻止
+	db.SingularTable(true)
 
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Memory{})

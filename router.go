@@ -6,7 +6,7 @@ import (
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	memory "github.com/hiroki-kondo-git/dayMemo_api_go/memories"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	// "github.com/labstack/echo/middleware"
 )
 
 func newRouter() *echo.Echo {
@@ -15,12 +15,11 @@ func newRouter() *echo.Echo {
 
 	// user
 	e.POST("/users/new", auth.Signup)
-	e.POST("/user/login", auth.Login)
 	// e.PUT("/users/:id", user.UpdateUser)
 	// e.GET("/users/:id", user.GetUser)
 
 	api := e.Group("/api")
-	api.Use(middleware.JWTWithConfig(auth.Config))
+	// api.Use(middleware.JWTWithConfig(auth.Config))
 	// memory
 	api.POST("memories/new", memory.CreateMemory)
 	// e.PUT("/memories/:id", memory.UpdateMemory)

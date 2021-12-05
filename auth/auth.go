@@ -1,27 +1,13 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 )
-
-type jwtCustomClaims struct {
-	UID  int    `json:"uid"`
-	Name string `json:"name"`
-	jwt.StandardClaims
-}
-
-var signingKey = []byte("secret")
-
-var Config = middleware.JWTConfig{
-	Claims:     &jwtCustomClaims{},
-	SigningKey: signingKey,
-}
 
 // dbにuser登録してuser情報(password以外)返す
 func Signup(ctx echo.Context) error {
@@ -32,6 +18,13 @@ func Signup(ctx echo.Context) error {
 		return err
 	}
 
+	uid, err := myfirebase.AuthFirebase(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	user.ID = uid
+
 	if user.Name == "" || user.Password == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
@@ -39,7 +32,7 @@ func Signup(ctx echo.Context) error {
 		}
 	}
 
-	if u := model.FindUser(&model.User{Name: user.Name}); u.ID != 0 {
+	if u := model.FindUser(&model.User{Name: user.Name}); u.ID != "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
 			Message: "name already exists",
@@ -50,50 +43,6 @@ func Signup(ctx echo.Context) error {
 	user.Password = ""
 
 	return ctx.JSON(http.StatusCreated, user)
-}
-
-// ログインしてtoken返す
-func Login(ctx echo.Context) error {
-	u := new(model.User)
-
-	// リクエストボディからuser情報取得
-	if err := ctx.Bind(u); err != nil {
-		return err
-	}
-
-	user := model.FindUser(&model.User{Name: u.Name})
-	if user.ID == 0 || user.Password != u.Password {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "invalid name or password",
-		}
-	}
-
-	claims := &jwtCustomClaims{
-		user.ID,
-		user.Name,
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	t, err := token.SignedString(signingKey)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]string{
-		"token": t,
-	})
-}
-
-// トークンからuidを取得して返す
-func UserIDFromToken(ctx echo.Context) int {
-	user := ctx.Get("user").(*jwt.Token)
-	claims := user.Claims.(*jwtCustomClaims)
-	uid := claims.UID
-	return uid
 }
 
 // func UpdateUser(ctx echo.Context) error {

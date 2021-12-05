@@ -6,8 +6,8 @@ import (
 )
 
 type Memory struct {
-	UID       int    `json:"uid"`
-	ID        int    `json:"id" gorm:"praimaly_key"`
+	UID       string `json:"uid"`
+	ID        string `json:"id" gorm:"praimaly_key"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	ImageUrl  string `json:"image_url"`

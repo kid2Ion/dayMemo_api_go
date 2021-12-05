@@ -19,7 +19,7 @@ func CreateMemory(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	memory.ID = uid
+	memory.UID = uid
 
 	if memory.Title == "" {
 		return &echo.HTTPError{

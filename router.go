@@ -23,14 +23,13 @@ func newRouter() *echo.Echo {
 	// e.PUT("/users/:id", user.UpdateUser)
 	// e.GET("/users/:id", user.GetUser)
 
-	api := e.Group("/api")
 	// api.Use(middleware.JWTWithConfig(auth.Config))
 	// memory
-	api.POST("memories/new", memory.CreateMemory)
+	e.POST("memories/new", memory.CreateMemory)
 	// e.PUT("/memories/:id", memory.UpdateMemory)
-	api.GET("/memory/list", memory.GetMemories)
+	e.GET("/memory/list", memory.GetMemories)
 	// api.GET("/memories/:id", memory.GetMemory)
-	api.DELETE("/memory/:id", memory.DeleteMemory)
+	e.DELETE("/memory/:id", memory.DeleteMemory)
 
 	return e
 }

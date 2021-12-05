@@ -46,6 +46,7 @@ func AuthFirebase(ctx echo.Context) (string, error) {
 	token, err := client.VerifyIDToken(context.Background(), idToken)
 	if err != nil {
 		// TODO: 無効なとくんなら401を返す
+		fmt.Println(err)
 		return "", err
 	}
 	uid := token.UID

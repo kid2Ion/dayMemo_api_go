@@ -3,7 +3,7 @@ package memory
 import (
 	"net/http"
 
-	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
+	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
 )
@@ -15,7 +15,7 @@ func CreateMemory(ctx echo.Context) error {
 		return err
 	}
 	// token→memory{UID}=user{ID}
-	uid, err := myfirebase.AuthFirebase(ctx)
+	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func CreateMemory(ctx echo.Context) error {
 }
 
 func GetMemories(ctx echo.Context) error {
-	uid, err := myfirebase.AuthFirebase(ctx)
+	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func GetMemories(ctx echo.Context) error {
 // }
 
 func DeleteMemory(ctx echo.Context) error {
-	uid, err := myfirebase.AuthFirebase(ctx)
+	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}

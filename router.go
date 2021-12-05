@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	memory "github.com/hiroki-kondo-git/dayMemo_api_go/memories"
+	user "github.com/hiroki-kondo-git/dayMemo_api_go/user"
 	"github.com/labstack/echo"
 	// "github.com/labstack/echo/middleware"
 )
@@ -14,7 +14,7 @@ func newRouter() *echo.Echo {
 	e.GET("/", hello)
 
 	// user
-	e.POST("/users/new", auth.Signup)
+	e.POST("/users/new", user.Signup)
 	// e.PUT("/users/:id", user.UpdateUser)
 	// e.GET("/users/:id", user.GetUser)
 

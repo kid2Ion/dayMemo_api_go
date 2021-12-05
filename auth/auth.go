@@ -1,58 +1,52 @@
 package auth
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"log"
+	"strings"
 
-	myfirebase "github.com/hiroki-kondo-git/dayMemo_api_go/firebase"
-	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"github.com/labstack/echo"
+	"google.golang.org/api/option"
 )
 
-// dbにuser登録してuser情報(password以外)返す
-func Signup(ctx echo.Context) error {
-	user := new(model.User)
+var client *auth.Client
 
-	// リクエストボディからuser情報取得
-	if err := ctx.Bind(user); err != nil {
-		return err
-	}
+func init() {
+	ctx := context.Background()
 
-	uid, err := myfirebase.AuthFirebase(ctx)
+	opt := option.WithCredentialsFile("daymemo-c5df2-firebase-adminsdk-5hwvd-7fc642a4a1.json")
+	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	user.ID = uid
-
-	if user.Name == "" || user.Password == "" {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "invalid name or password",
-		}
+		log.Panic(fmt.Errorf("error initializing app: %v", err))
 	}
 
-	if u := model.FindUser(&model.User{Name: user.Name}); u.ID != "" {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "name already exists",
-		}
+	var error error
+	client, error = app.Auth(ctx)
+	if error != nil {
+		log.Fatalf("error getting Auth clint: %v`\n", err)
 	}
 
-	model.CreateUser(user)
-	user.Password = ""
-
-	return ctx.JSON(http.StatusCreated, user)
+	// token, err := client.VerifyIDToken(ctx, idToken)
+	// testfirebase.CreateUser(ctx, client)
+	// testfirebase.UpdateUser(ctx, client, "3Bl7PjvITAXcgqMCBF5lGTP5k3g1")
+	// testfirebase.DeleatUser(ctx, client, "8ofSDj2BFjUSnMaBg31UeQ2KZEl1")
+	// testfirebase.GetUser(ctx, client, "gy5uqTu10Pg3PnVoUC27pbjRYQq1")
+	// defer client.Close()
 }
 
-// func UpdateUser(ctx echo.Context) error {
-// 	id := ctx.Param("id")
-// 	msg := "successfully edit user id:" + id
-// 	return ctx.String(http.StatusOK, msg)
-// }
+func AuthFirebase(ctx echo.Context) (string, error) {
+	authHeader := ctx.Request().Header.Get("Authorization")
+	idToken := strings.Replace(authHeader, "Bearer ", "", 1)
+	fmt.Println("idtoken:", idToken)
 
-// func GetUser(ctx echo.Context) error {
-// 	id := ctx.Param("id")
-// 	msg := "successfully get user id:" + id
-// 	return ctx.String(http.StatusOK, msg)
-// }
+	token, err := client.VerifyIDToken(context.Background(), idToken)
+	if err != nil {
+		return "", err
+	}
+	uid := token.UID
+
+	return uid, nil
+}

@@ -29,11 +29,6 @@ func init() {
 		log.Fatalf("error getting Auth clint: %v`\n", err)
 	}
 
-	// token, err := client.VerifyIDToken(ctx, idToken)
-	// testfirebase.CreateUser(ctx, client)
-	// testfirebase.UpdateUser(ctx, client, "3Bl7PjvITAXcgqMCBF5lGTP5k3g1")
-	// testfirebase.DeleatUser(ctx, client, "8ofSDj2BFjUSnMaBg31UeQ2KZEl1")
-	// testfirebase.GetUser(ctx, client, "gy5uqTu10Pg3PnVoUC27pbjRYQq1")
 	// defer client.Close()
 }
 

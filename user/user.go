@@ -25,10 +25,10 @@ func Signup(ctx echo.Context) error {
 	}
 	user.ID = uid
 
-	if user.Name == "" || user.Password == "" {
+	if user.Password == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "invalid name or password",
+			Message: "invalid or password",
 		}
 	}
 

@@ -6,11 +6,16 @@ import (
 	memory "github.com/hiroki-kondo-git/dayMemo_api_go/memories"
 	user "github.com/hiroki-kondo-git/dayMemo_api_go/user"
 	"github.com/labstack/echo"
-	// "github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/middleware"
 )
 
 func newRouter() *echo.Echo {
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:8080"},
+		AllowHeaders: []string{echo.HeaderAuthorization},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 	e.GET("/", hello)
 
 	// user

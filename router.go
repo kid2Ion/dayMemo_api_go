@@ -20,21 +20,17 @@ func newRouter() *echo.Echo {
 
 	// user
 	e.POST("/users/new", user.Signup)
-	// e.PUT("/users/:id", user.UpdateUser)
-	// e.GET("/users/:id", user.GetUser)
 
-	// api.Use(middleware.JWTWithConfig(auth.Config))
 	// memory
 	e.POST("memories/new", memory.CreateMemory)
-	// e.PUT("/memories/:id", memory.UpdateMemory)
 	e.GET("/memory/list", memory.GetMemories)
 	// api.GET("/memories/:id", memory.GetMemory)
+	// e.PUT("/memories/:id", memory.UpdateMemory)
 	e.DELETE("/memory/:id", memory.DeleteMemory)
 
 	return e
 }
 
 func hello(ctx echo.Context) error {
-	// myfirebase.InitFirebaseAuth()
 	return ctx.String(http.StatusOK, "hello dayMemo")
 }

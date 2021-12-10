@@ -34,15 +34,18 @@ func init() {
 
 func AuthFirebase(ctx echo.Context) (string, error) {
 	authTokenFromHeader := ctx.Request().Header.Get("Authorization")
-	// TODO: もしから文字だったら400を返す
+	// もしから文字だったら400を返す
+	if authTokenFromHeader == "" {
+		ctx.Response().WriteHeader(400)
+		return "", fmt.Errorf("empty authtoken")
+	}
 	idToken := strings.Replace(authTokenFromHeader, "Bearer ", "", 1)
-	fmt.Println("idtoken:", idToken)
 
 	token, err := client.VerifyIDToken(context.Background(), idToken)
 	if err != nil {
-		// TODO: 無効なとくんなら401を返す
-		fmt.Println(err)
-		return "", err
+		// TODO: 無効なトークンなら401を返す
+		ctx.Response().WriteHeader(401)
+		return "", fmt.Errorf("invalid token:%s", err)
 	}
 	uid := token.UID
 

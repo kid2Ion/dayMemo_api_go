@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"fmt"
 	"net/http"
 
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
@@ -14,6 +15,7 @@ func CreateMemory(ctx echo.Context) error {
 	if err := ctx.Bind(memory); err != nil {
 		return err
 	}
+	fmt.Println(memory)
 	// token→memory{UID}=user{ID}
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {

@@ -2,6 +2,7 @@ package testfirebase
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"firebase.google.com/go/auth"
@@ -9,13 +10,19 @@ import (
 
 func CreateUser(ctx context.Context, client *auth.Client) *auth.UserRecord {
 	params := (&auth.UserToCreate{}).
-		Email("user@example.com5").
-		Password("examplepass")
+		Email("useraa@example.coっazzasm5").
+		Password("examplepasっsszzaaaa")
 	u, err := client.CreateUser(ctx, params)
 	if err != nil {
 		log.Fatalf("error creating user: %v\n", err)
 	}
-	log.Printf("Successfully created user: %#v\n", u.UserInfo)
+	log.Printf("Successfully created user: %#v\n", u.UserInfo.UID)
+	token, err := client.CustomToken(ctx, u.UserInfo.UID)
+	if err != nil {
+		fmt.Errorf("fatal get token from uid", err)
+	}
+
+	log.Printf("token: %v\n", token)
 	return u
 }
 

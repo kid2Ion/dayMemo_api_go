@@ -3,6 +3,7 @@ package memory
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
@@ -81,7 +82,10 @@ func DeleteMemory(ctx echo.Context) error {
 		return echo.ErrNotFound
 	}
 
-	memoryID := ctx.Param("id")
+	memoryID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		fmt.Errorf("error get memoryID", err)
+	}
 
 	if err := model.DeleteMemory(&model.Memory{ID: memoryID, UID: uid}); err != nil {
 		return echo.ErrNotFound

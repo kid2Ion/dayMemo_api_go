@@ -2,16 +2,14 @@ package model
 
 import (
 	"fmt"
-	"time"
 )
 
 type Memory struct {
-	UID       string `json:"uid" gorm:"praimaly_key"`
-	ID        int    `json:"id" gorm:"AUTO_INCREMENT"`
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	ImageUrl  string `json:"image_url"`
-	CreatedAt time.Time
+	ID       uint   `gorm:"AUTO_INCREMENT"`
+	UID      string `json:"uid"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	ImageUrl string `json:"image_url"`
 }
 
 type MemoryList []Memory

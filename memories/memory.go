@@ -82,12 +82,15 @@ func DeleteMemory(ctx echo.Context) error {
 		return echo.ErrNotFound
 	}
 
-	memoryID, err := strconv.Atoi(ctx.Param("id"))
+	memoryID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
 		fmt.Errorf("error get memoryID", err)
 	}
 
-	if err := model.DeleteMemory(&model.Memory{ID: memoryID, UID: uid}); err != nil {
+	// gorm.modelを展開するためにインスタンス化
+	memory := &model.Memory{UID: uid}
+	memory.ID = uint(memoryID)
+	if err := model.DeleteMemory(memory); err != nil {
 		return echo.ErrNotFound
 	}
 

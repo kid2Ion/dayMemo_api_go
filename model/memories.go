@@ -7,7 +7,7 @@ import (
 
 type Memory struct {
 	UID       string `json:"uid" gorm:"praimaly_key"`
-	ID        string `json:"id" gorm:"AUTO_INCREMENT"`
+	ID        int    `json:"id" gorm:"AUTO_INCREMENT"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	ImageUrl  string `json:"image_url"`

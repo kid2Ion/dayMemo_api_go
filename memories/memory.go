@@ -16,7 +16,6 @@ func CreateMemory(ctx echo.Context) error {
 	if err := ctx.Bind(memory); err != nil {
 		return err
 	}
-	fmt.Println(memory)
 	// token→memory{UID}=user{ID}
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
@@ -30,9 +29,7 @@ func CreateMemory(ctx echo.Context) error {
 			Message: "invalid to or title",
 		}
 	}
-
 	model.CreateMemory(memory)
-
 	return ctx.JSON(http.StatusOK, memory)
 }
 

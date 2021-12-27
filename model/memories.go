@@ -2,10 +2,12 @@ package model
 
 import (
 	"fmt"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Memory struct {
-	ID       uint   `gorm:"AUTO_INCREMENT"`
+	gorm.Model
 	UID      string `json:"uid"`
 	Title    string `json:"title"`
 	Content  string `json:"content"`

@@ -42,11 +42,9 @@ func GetMemories(ctx echo.Context) error {
 	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
 		return echo.ErrNotFound
 	}
-	// todo 月ごとのmemory取得の実装
-	// year_month := ctx.QueryParam("year_month")
-	// msg := "successfully get memories list year_month:" + year_month
+	year_month := ctx.QueryParam("year_month")
+	memoryList := model.FindMemories(&model.Memory{UID: uid}, year_month)
 
-	memoryList := model.FindMemories(&model.Memory{UID: uid})
 	return ctx.JSON(http.StatusOK, memoryList)
 }
 

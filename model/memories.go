@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -20,9 +22,16 @@ func CreateMemory(memory *Memory) {
 	db.Create(memory)
 }
 
-func FindMemories(m *Memory) MemoryList {
+func FindMemories(m *Memory, year string, month string) MemoryList {
 	var memoryList MemoryList
-	db.Where(m).Find(&memoryList)
+
+	yearInt, _ := strconv.Atoi(year)
+	monthInt, _ := (strconv.Atoi(month))
+	monthType := time.Month(monthInt)
+	startTime := time.Date(yearInt, monthType, 1, 0, 0, 0, 0, time.Local)
+	endTime := startTime.AddDate(0, 1, 0)
+
+	db.Where(m).Where("created_at BETWEEN ? AND ?", startTime, endTime).Find(&memoryList)
 
 	return memoryList
 }

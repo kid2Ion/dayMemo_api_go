@@ -42,8 +42,9 @@ func GetMemories(ctx echo.Context) error {
 	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
 		return echo.ErrNotFound
 	}
-	year_month := ctx.QueryParam("year_month")
-	memoryList := model.FindMemories(&model.Memory{UID: uid}, year_month)
+	year := ctx.QueryParam("year")
+	month := ctx.QueryParam("month")
+	memoryList := model.FindMemories(&model.Memory{UID: uid}, year, month)
 
 	return ctx.JSON(http.StatusOK, memoryList)
 }

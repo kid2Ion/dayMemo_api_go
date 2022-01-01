@@ -19,13 +19,16 @@ func newRouter() *echo.Echo {
 	e.GET("/", hello)
 
 	// user
-	e.POST("/users/new", user.Signup)
+	e.POST("/user/new", user.Signup)
+	e.GET("/user/:id", user.GetUser) // ここだけ認証なし
+	e.PUT("user/update", user.UpdateUser)
+	e.DELETE("user/delete", user.DeleteUser)
 
 	// memory
 	e.POST("memories/new", memory.CreateMemory)
-	e.GET("/memory/list", memory.GetMemories)
-	// api.GET("/memories/:id", memory.GetMemory)
-	// e.PUT("/memories/:id", memory.UpdateMemory)
+	e.GET("/memories/list", memory.GetMemoryList)
+	e.GET("/memory/:id", memory.GetMemory)
+	e.PUT("/memory/update/:id", memory.UpdateMemory)
 	e.DELETE("/memory/:id", memory.DeleteMemory)
 
 	return e

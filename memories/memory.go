@@ -33,7 +33,7 @@ func CreateMemory(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, memory)
 }
 
-func GetMemories(ctx echo.Context) error {
+func GetMemoryList(ctx echo.Context) error {
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
@@ -49,24 +49,39 @@ func GetMemories(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, memoryList)
 }
 
-// todo update処理
-// func UpdateMemory(ctx echo.Context) error {
-// 	uid := auth.UserIDFromToken(ctx)
-// 	if user := model.FindUser(&model.User{ID: uid}); user.ID == 0 {
-// 		return echo.ErrNotFound
-// 	}
+func GetMemory(ctx echo.Context) error {
+	id := ctx.Param("id")
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+	msg := "get memory of id = " + id + "uid:" + uid
 
-// 	memoryID, err := strconv.Atoi(ctx.Param("id"))
-// 	if err != nil {
-// 		return echo.ErrNotFound
-// 	}
+	return ctx.JSON(http.StatusOK, msg)
+}
 
-// 	memories := model.FindMemories(&model.Memory{ID: memoryID, UID: uid})
-// 	if len(memories) == 0 {
-// 		return echo.ErrNotFound
-// 	}
-// memory := memories[0]
-// }
+func UpdateMemory(ctx echo.Context) error {
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+
+	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
+		return echo.ErrNotFound
+	}
+
+	memoryID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		return echo.ErrNotFound
+	}
+
+	// memory := model.FindMemories(&model.Memory{ID: memoryID, UID: uid})
+	// if len(memory) == 0 {
+	// 	return echo.ErrNotFound
+	// }
+
+	return ctx.JSON(http.StatusOK, memoryID)
+}
 
 func DeleteMemory(ctx echo.Context) error {
 	uid, err := auth.AuthFirebase(ctx)

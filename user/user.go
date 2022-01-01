@@ -45,14 +45,28 @@ func Signup(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, user)
 }
 
-// func UpdateUser(ctx echo.Context) error {
-// 	id := ctx.Param("id")
-// 	msg := "successfully edit user id:" + id
-// 	return ctx.String(http.StatusOK, msg)
-// }
+func GetUser(ctx echo.Context) error {
+	id := ctx.Param("id")
+	msg := "successfully get user id:" + id
+	return ctx.String(http.StatusOK, msg)
+}
 
-// func GetUser(ctx echo.Context) error {
-// 	id := ctx.Param("id")
-// 	msg := "successfully get user id:" + id
-// 	return ctx.String(http.StatusOK, msg)
-// }
+func UpdateUser(ctx echo.Context) error {
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	msg := "successfully update user id:" + uid
+	return ctx.String(http.StatusOK, msg)
+}
+
+func DeleteUser(ctx echo.Context) error {
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	msg := "successfully delete user id:" + uid
+	return ctx.String(http.StatusOK, msg)
+}

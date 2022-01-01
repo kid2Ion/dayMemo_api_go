@@ -77,7 +77,7 @@ func UpdateUser(ctx echo.Context) error {
 	}
 	user.ID = uid
 
-	// 一応存在しなければerrで返す（firebaseからとってくるから存在しないことはあり得ない）
+	// 一応存在しなければerrで返す（firebaseからとってくるから存在しないことはない）
 	u := model.FindUser(&model.User{ID: user.ID})
 	if u.ID == "" {
 		return &echo.HTTPError{

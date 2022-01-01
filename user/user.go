@@ -1,15 +1,14 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
 )
 
-// dbにuser登録してuser情報(password以外)返す
 func Signup(ctx echo.Context) error {
 	user := new(model.User)
 
@@ -20,7 +19,6 @@ func Signup(ctx echo.Context) error {
 
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	user.ID = uid
@@ -32,7 +30,7 @@ func Signup(ctx echo.Context) error {
 		}
 	}
 
-	if u := model.FindUser(&model.User{Name: user.Name}); u.ID != "" {
+	if u := model.FindUser(&model.User{UserName: user.UserName}); u.ID != "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
 			Message: "name already exists",
@@ -41,32 +39,67 @@ func Signup(ctx echo.Context) error {
 
 	model.CreateUser(user)
 	user.Password = ""
+	user.Email = ""
+	user.CreatedAt = time.Date(1, 1, 1, 0, 0, 0, 0, time.Local)
 
 	return ctx.JSON(http.StatusCreated, user)
 }
 
 func GetUser(ctx echo.Context) error {
-	id := ctx.Param("id")
-	msg := "successfully get user id:" + id
-	return ctx.String(http.StatusOK, msg)
+	name := ctx.Param("name")
+	u := new(model.User)
+
+	// 懸念：適当にnameいれてrequest投げてそれが当たったら、uidがresponseに入る→いいのか？
+	u.UserName = name
+	user := model.FindUser(&model.User{UserName: u.UserName})
+	if user.ID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "user not found",
+		}
+	}
+	// resにいらないものはdefault値
+	user.Email = ""
+	user.Password = ""
+	user.CreatedAt = time.Date(1, 1, 1, 0, 0, 0, 0, time.Local)
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func UpdateUser(ctx echo.Context) error {
-	uid, err := auth.AuthFirebase(ctx)
-	if err != nil {
-		fmt.Println(err)
+	user := new(model.User)
+	if err := ctx.Bind(user); err != nil {
 		return err
 	}
-	msg := "successfully update user id:" + uid
-	return ctx.String(http.StatusOK, msg)
+
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+	user.ID = uid
+
+	// 一応存在しなければerrで返す（firebaseからとってくるから存在しないことはあり得ない）
+	u := model.FindUser(&model.User{ID: user.ID})
+	if u.ID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "failed to update: user not found",
+		}
+	}
+
+	user = model.UpdateUser(user)
+	user.ID = ""
+
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func DeleteUser(ctx echo.Context) error {
+	user := new(model.User)
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-	msg := "successfully delete user id:" + uid
-	return ctx.String(http.StatusOK, msg)
+	user.ID = uid
+
+	model.DeleteUser(user)
+	return ctx.JSON(http.StatusOK, "successfully user delete")
 }

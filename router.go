@@ -20,7 +20,7 @@ func newRouter() *echo.Echo {
 
 	// user
 	e.POST("/user/new", user.Signup)
-	e.GET("/user/:id", user.GetUser) // ここだけ認証なし
+	e.GET("/user/:name", user.GetUser) // ここだけ認証なし
 	e.PUT("user/update", user.UpdateUser)
 	e.DELETE("user/delete", user.DeleteUser)
 

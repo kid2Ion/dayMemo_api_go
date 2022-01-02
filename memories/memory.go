@@ -1,7 +1,6 @@
 package memory
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,32 +15,33 @@ func CreateMemory(ctx echo.Context) error {
 	if err := ctx.Bind(memory); err != nil {
 		return err
 	}
-	// token→memory{UID}=user{ID}
+
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}
 	memory.UID = uid
 
+	// todo validation
 	if memory.Title == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "invalid to or title",
+			Message: "title is empty",
 		}
 	}
+
+	//todo ここにiconbase64(json)をもとにgstorageあげる処理→imageURLをmemoryに格納して、一緒にcreate
 	model.CreateMemory(memory)
+
 	return ctx.JSON(http.StatusOK, memory)
 }
 
-func GetMemories(ctx echo.Context) error {
+func GetMemoryList(ctx echo.Context) error {
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}
 
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
-		return echo.ErrNotFound
-	}
 	year := ctx.QueryParam("year")
 	month := ctx.QueryParam("month")
 	memoryList := model.FindMemories(&model.Memory{UID: uid}, year, month)
@@ -49,46 +49,76 @@ func GetMemories(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, memoryList)
 }
 
-// todo update処理
-// func UpdateMemory(ctx echo.Context) error {
-// 	uid := auth.UserIDFromToken(ctx)
-// 	if user := model.FindUser(&model.User{ID: uid}); user.ID == 0 {
-// 		return echo.ErrNotFound
-// 	}
+func GetMemory(ctx echo.Context) error {
+	id, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+	m := new(model.Memory)
+	m.ID = uint(id)
+	m.UID = uid
 
-// 	memoryID, err := strconv.Atoi(ctx.Param("id"))
-// 	if err != nil {
-// 		return echo.ErrNotFound
-// 	}
+	memory := model.FindMemory(m)
+	if memory.Title == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "Memory is not found or not your own.",
+		}
+	}
 
-// 	memories := model.FindMemories(&model.Memory{ID: memoryID, UID: uid})
-// 	if len(memories) == 0 {
-// 		return echo.ErrNotFound
-// 	}
-// memory := memories[0]
-// }
+	return ctx.JSON(http.StatusOK, memory)
+}
 
-func DeleteMemory(ctx echo.Context) error {
+func UpdateMemory(ctx echo.Context) error {
+	memory := new(model.Memory)
+	memoryID, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	memory.ID = uint(memoryID)
+
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err
 	}
 
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
-		return echo.ErrNotFound
+	memory.UID = uid
+
+	m := model.FindMemory(memory)
+	if m.UID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "Memory is not found or not your own.",
+		}
+	}
+	// todo validation
+	if err := ctx.Bind(memory); err != nil {
+		return err
 	}
 
-	memoryID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	memory = model.UpdateMemory(memory)
+
+	return ctx.JSON(http.StatusOK, memory)
+}
+
+func DeleteMemory(ctx echo.Context) error {
+	memory := new(model.Memory)
+	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
-		fmt.Errorf("error get memoryID", err)
+		return err
 	}
+	memory.UID = uid
 
-	// gorm.modelを展開するためにインスタンス化
-	memory := &model.Memory{UID: uid}
+	memoryID, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	memory.ID = uint(memoryID)
-	if err := model.DeleteMemory(memory); err != nil {
-		return echo.ErrNotFound
+
+	m := model.FindMemory(memory)
+	if m.UID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "Memory is not found or not your own.",
+		}
 	}
 
-	return ctx.NoContent(http.StatusOK)
+	model.DeleteMemory(memory)
+
+	return ctx.JSON(http.StatusOK, "successfully delete memory")
 }

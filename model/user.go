@@ -7,10 +7,10 @@ import (
 type User struct {
 	ID          string `json:"id" gorm:"praimaly_key"`
 	Email       string `json:"email"`
-	UserName    string `json:"user_name"`
-	DisplayName string `json:"display_name"`
+	UserName    string `json:"user_name" validate:"min=4,max=10,alphanum"`
+	DisplayName string `json:"display_name" validate:"min=1,max=10"`
 	IconUrl     string `json:"icon_url"`
-	Password    string `json:"password"`
+	Password    string `json:"password" validate:"min=6"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

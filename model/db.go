@@ -10,7 +10,7 @@ var db *gorm.DB
 func init() {
 	var err error
 
-	db, err = gorm.Open("sqlite3", "db/daymemo.db")
+	db, err = gorm.Open("sqlite3", "db/dayMemo.db")
 	if err != nil {
 		panic("failed to connect datebase")
 	}

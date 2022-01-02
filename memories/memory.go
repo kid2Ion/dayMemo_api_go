@@ -3,7 +3,6 @@ package memory
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
@@ -23,17 +22,16 @@ func CreateMemory(ctx echo.Context) error {
 	}
 	memory.UID = uid
 
+	// todo validation
 	if memory.Title == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "invalid to or title",
+			Message: "title is empty",
 		}
 	}
 
 	//todo ここにiconbase64(json)をもとにgstorageあげる処理→imageURLをmemoryに格納して、一緒にcreate
 	model.CreateMemory(memory)
-	memory.CreatedAt = time.Date(1, 1, 1, 0, 0, 0, 0, time.Local)
-	memory.UpdatedAt = time.Date(1, 1, 1, 0, 0, 0, 0, time.Local)
 
 	return ctx.JSON(http.StatusOK, memory)
 }
@@ -44,9 +42,6 @@ func GetMemoryList(ctx echo.Context) error {
 		return err
 	}
 
-	if user := model.FindUser(&model.User{ID: uid}); user.ID == "" {
-		return echo.ErrNotFound
-	}
 	year := ctx.QueryParam("year")
 	month := ctx.QueryParam("month")
 	memoryList := model.FindMemories(&model.Memory{UID: uid}, year, month)
@@ -62,19 +57,13 @@ func GetMemory(ctx echo.Context) error {
 	}
 	m := new(model.Memory)
 	m.ID = uint(id)
+	m.UID = uid
 
-	memory := model.FindMemory(&model.Memory{ID: m.ID})
+	memory := model.FindMemory(m)
 	if memory.Title == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "memory not found",
-		}
-	}
-	// 他人がgetできないように
-	if memory.UID != uid {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "memory not found,not your memory",
+			Message: "Memory is not found or not your own.",
 		}
 	}
 
@@ -83,9 +72,6 @@ func GetMemory(ctx echo.Context) error {
 
 func UpdateMemory(ctx echo.Context) error {
 	memory := new(model.Memory)
-	if err := ctx.Bind(memory); err != nil {
-		return err
-	}
 	memoryID, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	memory.ID = uint(memoryID)
 
@@ -96,19 +82,16 @@ func UpdateMemory(ctx echo.Context) error {
 
 	memory.UID = uid
 
-	m := model.FindMemory(&model.Memory{ID: uint(memoryID)})
+	m := model.FindMemory(memory)
 	if m.UID == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "memory not found",
+			Message: "Memory is not found or not your own.",
 		}
 	}
-	// 他人がupdateできないように
-	if m.UID != uid {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "memory not found,not your memory",
-		}
+	// todo validation
+	if err := ctx.Bind(memory); err != nil {
+		return err
 	}
 
 	memory = model.UpdateMemory(memory)
@@ -122,22 +105,16 @@ func DeleteMemory(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	memory.UID = uid
 
 	memoryID, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	memory.ID = uint(memoryID)
 
-	m := model.FindMemory(&model.Memory{ID: uint(memoryID)})
+	m := model.FindMemory(memory)
 	if m.UID == "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "memory not found",
-		}
-	}
-	// 他人がdeleteできないように
-	if m.UID != uid {
-		return &echo.HTTPError{
-			Code:    http.StatusBadRequest,
-			Message: "memory not found,not your memory",
+			Message: "Memory is not found or not your own.",
 		}
 	}
 

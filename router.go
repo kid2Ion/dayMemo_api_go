@@ -20,7 +20,7 @@ func newRouter() *echo.Echo {
 
 	// user
 	e.POST("/user/new", user.Signup)
-	e.GET("/user/:id", user.GetUser) // ここだけ認証なし
+	e.GET("/user/:name", user.GetUser) // ここだけ認証なし
 	e.PUT("user/update", user.UpdateUser)
 	e.DELETE("user/delete", user.DeleteUser)
 
@@ -29,7 +29,7 @@ func newRouter() *echo.Echo {
 	e.GET("/memories/list", memory.GetMemoryList)
 	e.GET("/memory/:id", memory.GetMemory)
 	e.PUT("/memory/update/:id", memory.UpdateMemory)
-	e.DELETE("/memory/:id", memory.DeleteMemory)
+	e.DELETE("/memory/delete/:id", memory.DeleteMemory)
 
 	return e
 }

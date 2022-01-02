@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/hiroki-kondo-git/dayMemo_api_go/auth"
@@ -9,18 +8,17 @@ import (
 	"github.com/labstack/echo"
 )
 
-// dbにuser登録してuser情報(password以外)返す
 func Signup(ctx echo.Context) error {
 	user := new(model.User)
 
 	// リクエストボディからuser情報取得
+	// todo validation
 	if err := ctx.Bind(user); err != nil {
 		return err
 	}
 
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	user.ID = uid
@@ -32,7 +30,7 @@ func Signup(ctx echo.Context) error {
 		}
 	}
 
-	if u := model.FindUser(&model.User{Name: user.Name}); u.ID != "" {
+	if u := model.FindUser(user); u.ID != "" {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
 			Message: "name already exists",
@@ -46,27 +44,48 @@ func Signup(ctx echo.Context) error {
 }
 
 func GetUser(ctx echo.Context) error {
-	id := ctx.Param("id")
-	msg := "successfully get user id:" + id
-	return ctx.String(http.StatusOK, msg)
+	name := ctx.Param("name")
+	u := new(model.User)
+
+	u.UserName = name
+	user := model.FindUser(u)
+	if user.ID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "user not found",
+		}
+	}
+
+	user.Password = ""
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func UpdateUser(ctx echo.Context) error {
-	uid, err := auth.AuthFirebase(ctx)
-	if err != nil {
-		fmt.Println(err)
+	user := new(model.User)
+	// todo validation
+	if err := ctx.Bind(user); err != nil {
 		return err
 	}
-	msg := "successfully update user id:" + uid
-	return ctx.String(http.StatusOK, msg)
+
+	uid, err := auth.AuthFirebase(ctx)
+	if err != nil {
+		return err
+	}
+	user.ID = uid
+
+	user = model.UpdateUser(user)
+
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func DeleteUser(ctx echo.Context) error {
+	user := new(model.User)
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-	msg := "successfully delete user id:" + uid
-	return ctx.String(http.StatusOK, msg)
+	user.ID = uid
+
+	model.DeleteUser(user)
+	return ctx.JSON(http.StatusOK, "successfully user delete")
 }

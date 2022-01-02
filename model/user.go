@@ -30,7 +30,7 @@ func DeleteUser(user *User) {
 
 func FindUser(u *User) User {
 	var user User
-	db.Where(u).First(&user)
+	db.Where("user_name = ?", u.UserName).First(&user)
 
 	return user
 }

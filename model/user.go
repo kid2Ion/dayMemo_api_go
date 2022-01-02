@@ -12,6 +12,7 @@ type User struct {
 	IconUrl     string `json:"icon_url"`
 	Password    string `json:"password"`
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func CreateUser(user *User) {

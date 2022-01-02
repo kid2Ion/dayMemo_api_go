@@ -12,6 +12,7 @@ func Signup(ctx echo.Context) error {
 	user := new(model.User)
 
 	// リクエストボディからuser情報取得
+	// todo validation
 	if err := ctx.Bind(user); err != nil {
 		return err
 	}
@@ -61,6 +62,7 @@ func GetUser(ctx echo.Context) error {
 
 func UpdateUser(ctx echo.Context) error {
 	user := new(model.User)
+	// todo validation
 	if err := ctx.Bind(user); err != nil {
 		return err
 	}

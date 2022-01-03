@@ -8,8 +8,8 @@ import (
 type Memory struct {
 	ID        uint   `gorm:"primary_key"`
 	UID       string `json:"uid"`
-	Title     string `json:"title"`
-	Content   string `json:"content"`
+	Title     string `json:"title" validate:"min=1,max=20"`
+	Content   string `json:"content" validate:"required"`
 	ImageUrl  string
 	CreatedAt time.Time
 	UpdatedAt time.Time

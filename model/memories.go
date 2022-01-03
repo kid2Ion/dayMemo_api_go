@@ -6,13 +6,14 @@ import (
 )
 
 type Memory struct {
-	ID        uint   `gorm:"primary_key"`
-	UID       string `json:"uid"`
-	Title     string `json:"title" validate:"min=1,max=20"`
-	Content   string `json:"content" validate:"required"`
-	ImageUrl  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID          uint   `gorm:"primary_key"`
+	UID         string `json:"uid"`
+	Title       string `json:"title" validate:"min=1,max=20"`
+	Content     string `json:"content" validate:"required"`
+	ImageUrl    string
+	ImageBase64 string `json:"image_base64"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type MemoryList []Memory

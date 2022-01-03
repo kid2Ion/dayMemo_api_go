@@ -6,28 +6,42 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"net/http"
 
 	"cloud.google.com/go/storage"
+	"github.com/labstack/echo"
+	"google.golang.org/api/option"
 )
 
-func UploadFile(w io.Writer, bucket, object string) error {
+func UploadFile(bucket string, object string, imgBase64 string) error {
 	// bucket := "bucket-name"  storageのバケット名
-	// object := "object-neme"   アップロード後のファイル名
+	// object := "object-neme"   アップロード後のファイル名、自分で決める
+
+	credentialFilePath := "./daymemo-d5cdab55b3ae.json"
+	fmt.Println("aho")
 
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
 		fmt.Errorf("NewClient:%v", err)
+		fmt.Println("kasu")
 	}
 	defer client.Close()
 
-	decodedImage, err := base64.RawStdEncoding.DecodeString("aaa")
+	// decodeで[]byte型になる
+	decodedImage, err := base64.RawStdEncoding.DecodeString(imgBase64)
 	if err != nil {
-		fmt.Errorf("decode:%v", err)
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "img_base64 cannot decode",
+		}
 	}
+	// io.reader型にする
 	decodedReader := bytes.NewReader(decodedImage)
 
 	wc := client.Bucket(bucket).Object(object).NewWriter(ctx)
+	fmt.Println("aho")
+	// bucket,objectを指定し、reader型の画像をアップロード
 	if _, err = io.Copy(wc, decodedReader); err != nil {
 		fmt.Errorf("io.Copy:%v", err)
 	}
@@ -35,6 +49,6 @@ func UploadFile(w io.Writer, bucket, object string) error {
 		fmt.Errorf("wc.Close:%v", err)
 	}
 
-	fmt.Fprintf(w, "Blob %v uploaded \n", object)
+	fmt.Println("Blob %v uploaded \n", object)
 	return nil
 }

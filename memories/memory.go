@@ -7,6 +7,7 @@ import (
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 func CreateMemory(ctx echo.Context) error {
@@ -22,11 +23,13 @@ func CreateMemory(ctx echo.Context) error {
 	}
 	memory.UID = uid
 
-	// todo validation
-	if memory.Title == "" {
+	// validation
+	validate := validator.New()
+	errors := validate.Struct(memory)
+	if errors != nil {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
-			Message: "title is empty",
+			Message: ValidationError(errors),
 		}
 	}
 
@@ -89,9 +92,18 @@ func UpdateMemory(ctx echo.Context) error {
 			Message: "Memory is not found or not your own.",
 		}
 	}
-	// todo validation
+
 	if err := ctx.Bind(memory); err != nil {
 		return err
+	}
+	// validation
+	validate := validator.New()
+	errors := validate.Struct(memory)
+	if errors != nil {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: ValidationError(errors),
+		}
 	}
 
 	memory = model.UpdateMemory(memory)
@@ -121,4 +133,22 @@ func DeleteMemory(ctx echo.Context) error {
 	model.DeleteMemory(memory)
 
 	return ctx.JSON(http.StatusOK, "successfully delete memory")
+}
+
+// validationErrMessage
+func ValidationError(err error) []string {
+	var errorMessages []string
+	for _, err := range err.(validator.ValidationErrors) {
+		var errorMessage string
+		fieldName := err.Field()
+
+		switch fieldName {
+		case "Title":
+			errorMessage = "Title must over 1 less 20 charactors"
+		case "Content":
+			errorMessage = "Content is required"
+		}
+		errorMessages = append(errorMessages, errorMessage)
+	}
+	return errorMessages
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
+	gstorage "github.com/hiroki-kondo-git/dayMemo_api_go/gstorage"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
 	"gopkg.in/go-playground/validator.v9"
@@ -33,7 +34,10 @@ func CreateMemory(ctx echo.Context) error {
 		}
 	}
 
-	//todo ここにiconbase64(json)をもとにgstorageあげる処理→imageURLをmemoryに格納して、一緒にcreate
+	imagebase64 := memory.ImageBase64
+
+	gstorage.UploadFile("daymemo-memory", "LGTM.png", imagebase64)
+	memory.ImageBase64 = ""
 	model.CreateMemory(memory)
 
 	return ctx.JSON(http.StatusOK, memory)

@@ -38,7 +38,7 @@ func CreateMemory(ctx echo.Context) error {
 	imagebase64 := memory.ImageBase64
 	backetName := os.Getenv("BACKET_MEMORY")
 	// 画像ファイル名どこで指定するか？あと同じファイル名ならerrでないが、GCSにあがらない。
-	imageName := "にちゃぁぁぁぁぁぁぁぁ"
+	imageName := "popo"
 
 	if err := gstorage.UploadFile(backetName, imageName, imagebase64); err != nil {
 		return err

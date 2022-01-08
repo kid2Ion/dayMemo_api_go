@@ -8,6 +8,7 @@ import (
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	gstorage "github.com/hiroki-kondo-git/dayMemo_api_go/gstorage"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
+	myutil "github.com/hiroki-kondo-git/dayMemo_api_go/utility"
 	"github.com/labstack/echo"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -37,8 +38,10 @@ func CreateMemory(ctx echo.Context) error {
 
 	imagebase64 := memory.ImageBase64
 	backetName := os.Getenv("BACKET_MEMORY")
-	// 画像ファイル名どこで指定するか？あと同じファイル名ならerrでないが、GCSにあがらない。
-	imageName := "popo"
+	imageName, err := myutil.RandomString(10)
+	if err != nil {
+		return err
+	}
 
 	if err := gstorage.UploadFile(backetName, imageName, imagebase64); err != nil {
 		return err

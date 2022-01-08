@@ -2,9 +2,11 @@ package memory
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 
 	auth "github.com/hiroki-kondo-git/dayMemo_api_go/auth"
+	gstorage "github.com/hiroki-kondo-git/dayMemo_api_go/gstorage"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
 	"github.com/labstack/echo"
 	"gopkg.in/go-playground/validator.v9"
@@ -33,7 +35,16 @@ func CreateMemory(ctx echo.Context) error {
 		}
 	}
 
-	//todo ここにiconbase64(json)をもとにgstorageあげる処理→imageURLをmemoryに格納して、一緒にcreate
+	imagebase64 := memory.ImageBase64
+	backetName := os.Getenv("BACKET_MEMORY")
+	// 画像ファイル名どこで指定するか？あと同じファイル名ならerrでないが、GCSにあがらない。
+	imageName := "popo"
+
+	if err := gstorage.UploadFile(backetName, imageName, imagebase64); err != nil {
+		return err
+	}
+	memory.ImageBase64 = ""
+	memory.ImageUrl = "https://storage.googleapis.com/daymemo-memory/" + imageName
 	model.CreateMemory(memory)
 
 	return ctx.JSON(http.StatusOK, memory)

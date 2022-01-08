@@ -1,2 +1,6 @@
 # firebase credential file
-daymemo-c5df2-firebase-adminsdk-5hwvd-7fc642a4a1.json
+firebase-sdk.json
+# gcloud credential file
+gcs-sdk.json
+# env file
+env/local.env

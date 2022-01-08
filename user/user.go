@@ -13,7 +13,6 @@ func Signup(ctx echo.Context) error {
 	user := new(model.User)
 
 	// リクエストボディからuser情報取得
-	// todo validation
 	if err := ctx.Bind(user); err != nil {
 		return err
 	}

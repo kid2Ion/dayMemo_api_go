@@ -18,7 +18,7 @@ var client *auth.Client
 func init() {
 	ctx := context.Background()
 
-	opt := option.WithCredentialsFile("daymemo-c5df2-firebase-adminsdk-5hwvd-7fc642a4a1.json")
+	opt := option.WithCredentialsFile("firebase-sdk.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Panic(fmt.Errorf("error initializing app: %v", err))

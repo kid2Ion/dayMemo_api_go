@@ -120,6 +120,30 @@ func UpdateMemory(ctx echo.Context) error {
 		}
 	}
 
+	// gcsimgUpdate
+	if memory.ImageBase64 != "" {
+		backetName := os.Getenv("BACKET_MEMORY")
+		imageName := m.ImageUrl[46:]
+		if err := gstorage.DeleteFile(backetName, imageName); err != nil {
+			return err
+		}
+
+		imagebase64 := memory.ImageBase64
+		imageName, err := myutil.RandomString(10)
+		if err != nil {
+			return err
+		}
+
+		if err := gstorage.UploadFile(backetName, imageName, imagebase64); err != nil {
+			return err
+		}
+
+		memory.ImageUrl = "https://storage.googleapis.com/daymemo-memory/" + imageName
+	} else {
+		memory.ImageUrl = m.ImageUrl
+	}
+
+	memory.ImageBase64 = ""
 	memory = model.UpdateMemory(memory)
 
 	return ctx.JSON(http.StatusOK, memory)

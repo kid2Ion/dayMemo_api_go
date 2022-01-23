@@ -9,7 +9,8 @@ type User struct {
 	Email       string `json:"email"`
 	UserName    string `json:"user_name" validate:"min=4,max=10,alphanum"`
 	DisplayName string `json:"display_name" validate:"min=1,max=10"`
-	IconUrl     string `json:"icon_url"`
+	IconBase64  string `json:"icon_base64"`
+	IconUrl     string
 	Password    string `json:"password" validate:"min=6"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -32,6 +33,13 @@ func DeleteUser(user *User) {
 func FindUser(u *User) User {
 	var user User
 	db.Where("user_name = ?", u.UserName).First(&user)
+
+	return user
+}
+
+func FindUserByUid(u *User) User {
+	var user User
+	db.Where("id = ?", u.ID).First(&user)
 
 	return user
 }

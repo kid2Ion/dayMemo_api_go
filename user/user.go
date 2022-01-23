@@ -2,9 +2,12 @@ package user
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/hiroki-kondo-git/dayMemo_api_go/auth"
+	gstorage "github.com/hiroki-kondo-git/dayMemo_api_go/gstorage"
 	"github.com/hiroki-kondo-git/dayMemo_api_go/model"
+	myutil "github.com/hiroki-kondo-git/dayMemo_api_go/utility"
 	"github.com/labstack/echo"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -39,6 +42,19 @@ func Signup(ctx echo.Context) error {
 			Message: "name already exists",
 		}
 	}
+
+	iconbase64 := user.IconBase64
+	backetName := os.Getenv("BACKET_USER")
+	iconName, err := myutil.RandomString(10)
+	if err != nil {
+		return err
+	}
+
+	if err := gstorage.UploadFile(backetName, iconName, iconbase64); err != nil {
+		return err
+	}
+	user.IconBase64 = ""
+	user.IconUrl = "https://storage.googleapis.com/daymemo-user/" + iconName
 
 	model.CreateUser(user)
 	user.Password = ""
@@ -75,7 +91,17 @@ func UpdateUser(ctx echo.Context) error {
 	}
 	user.ID = uid
 
-	if u := model.FindUser(user); u.ID != "" {
+	// 既存のuser情報取得
+	thisUser := model.FindUserByUid(user)
+	if thisUser.ID == "" {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "user not found",
+		}
+	}
+
+	// nameのvalidation
+	if u := model.FindUser(user); u.ID != "" && u.UserName != thisUser.UserName {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,
 			Message: "name already exists",
@@ -92,6 +118,30 @@ func UpdateUser(ctx echo.Context) error {
 		}
 	}
 
+	// gcsimgUpdate
+	if user.IconBase64 != "" {
+		backetName := os.Getenv("BACKET_USER")
+		iconName := thisUser.IconUrl[44:]
+		if err := gstorage.DeleteFile(backetName, iconName); err != nil {
+			return err
+		}
+
+		iconbase64 := user.IconBase64
+		iconName, err := myutil.RandomString(10)
+		if err != nil {
+			return err
+		}
+
+		if err := gstorage.UploadFile(backetName, iconName, iconbase64); err != nil {
+			return err
+		}
+
+		user.IconUrl = "https://storage.googleapis.com/daymemo-user/" + iconName
+	} else {
+		user.IconUrl = thisUser.IconUrl
+	}
+
+	user.IconBase64 = ""
 	user = model.UpdateUser(user)
 
 	return ctx.JSON(http.StatusOK, user)

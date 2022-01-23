@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo"
@@ -36,6 +37,9 @@ func UploadFile(bucket string, object string, imgBase64 string) error {
 		}
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
+
 	decodedReader := bytes.NewReader(decodedImage)
 	wc := client.Bucket(bucket).Object(object).NewWriter(ctx)
 
@@ -47,6 +51,31 @@ func UploadFile(bucket string, object string, imgBase64 string) error {
 	}
 
 	fmt.Printf("Blob %v uploaded \n", object)
+
+	return nil
+}
+
+func DeleteFile(bucket string, object string) error {
+	credentialFilePath := "./gcs-sdk.json"
+	ctx := context.Background()
+
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
+	if err != nil {
+		return &echo.HTTPError{
+			Code:    http.StatusBadRequest,
+			Message: "cannot set up gstorage client",
+		}
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	o := client.Bucket(bucket).Object(object)
+	if err := o.Delete(ctx); err != nil {
+		return fmt.Errorf("object(%q) .delere: %v", object, err)
+	}
+	fmt.Printf("Blob %v delete \n", object)
 
 	return nil
 }

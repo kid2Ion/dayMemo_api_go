@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Memory struct {
+type Memories struct {
 	ID          uint   `gorm:"primary_key"`
 	UID         string `json:"uid"`
 	Title       string `json:"title" validate:"min=1,max=20"`
@@ -16,13 +16,13 @@ type Memory struct {
 	UpdatedAt   time.Time
 }
 
-type MemoryList []Memory
+type MemoryList []Memories
 
-func CreateMemory(memory *Memory) {
+func CreateMemory(memory *Memories) {
 	db.Create(memory)
 }
 
-func FindMemories(m *Memory, year string, month string) MemoryList {
+func FindMemories(m *Memories, year string, month string) MemoryList {
 	var memoryList MemoryList
 
 	yearInt, _ := strconv.Atoi(year)
@@ -35,19 +35,19 @@ func FindMemories(m *Memory, year string, month string) MemoryList {
 	return memoryList
 }
 
-func FindMemory(m *Memory) Memory {
-	var memory Memory
+func FindMemory(m *Memories) Memories {
+	var memory Memories
 	db.Where(m).First(&memory)
 
 	return memory
 }
 
-func UpdateMemory(memory *Memory) *Memory {
+func UpdateMemory(memory *Memories) *Memories {
 	db.Save(memory)
 
 	return memory
 }
 
-func DeleteMemory(memory *Memory) {
+func DeleteMemory(memory *Memories) {
 	db.Delete(memory)
 }

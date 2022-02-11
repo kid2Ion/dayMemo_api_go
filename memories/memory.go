@@ -14,7 +14,7 @@ import (
 )
 
 func CreateMemory(ctx echo.Context) error {
-	memory := new(model.Memory)
+	memory := new(model.Memories)
 	// リクエストボディからmemory情報取得
 	if err := ctx.Bind(memory); err != nil {
 		return err
@@ -61,7 +61,7 @@ func GetMemoryList(ctx echo.Context) error {
 
 	year := ctx.QueryParam("year")
 	month := ctx.QueryParam("month")
-	memoryList := model.FindMemories(&model.Memory{UID: uid}, year, month)
+	memoryList := model.FindMemories(&model.Memories{UID: uid}, year, month)
 
 	return ctx.JSON(http.StatusOK, memoryList)
 }
@@ -72,7 +72,7 @@ func GetMemory(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	m := new(model.Memory)
+	m := new(model.Memories)
 	m.ID = uint(id)
 	m.UID = uid
 
@@ -88,7 +88,7 @@ func GetMemory(ctx echo.Context) error {
 }
 
 func UpdateMemory(ctx echo.Context) error {
-	memory := new(model.Memory)
+	memory := new(model.Memories)
 	memoryID, _ := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	memory.ID = uint(memoryID)
 
@@ -150,7 +150,7 @@ func UpdateMemory(ctx echo.Context) error {
 }
 
 func DeleteMemory(ctx echo.Context) error {
-	memory := new(model.Memory)
+	memory := new(model.Memories)
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err

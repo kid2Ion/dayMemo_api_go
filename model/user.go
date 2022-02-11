@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type User struct {
+type Users struct {
 	ID          string `json:"id" gorm:"praimaly_key"`
 	Email       string `json:"email"`
 	UserName    string `json:"user_name" validate:"min=4,max=10,alphanum"`
@@ -16,29 +16,29 @@ type User struct {
 	UpdatedAt   time.Time
 }
 
-func CreateUser(user *User) {
+func CreateUser(user *Users) {
 	db.Create(user)
 }
 
-func UpdateUser(user *User) *User {
+func UpdateUser(user *Users) *Users {
 	db.Save(user)
 
 	return user
 }
 
-func DeleteUser(user *User) {
+func DeleteUser(user *Users) {
 	db.Delete(user)
 }
 
-func FindUser(u *User) User {
-	var user User
+func FindUser(u *Users) Users {
+	var user Users
 	db.Where("user_name = ?", u.UserName).First(&user)
 
 	return user
 }
 
-func FindUserByUid(u *User) User {
-	var user User
+func FindUserByUid(u *Users) Users {
+	var user Users
 	db.Where("id = ?", u.ID).First(&user)
 
 	return user

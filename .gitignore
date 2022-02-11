@@ -4,3 +4,5 @@ firebase-sdk.json
 gcs-sdk.json
 # env file
 env/local.env
+# .direnv
+.envrc

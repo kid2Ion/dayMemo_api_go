@@ -13,7 +13,7 @@ import (
 )
 
 func Signup(ctx echo.Context) error {
-	user := new(model.Users)
+	user := new(model.User)
 
 	// リクエストボディからuser情報取得
 	if err := ctx.Bind(user); err != nil {
@@ -64,7 +64,7 @@ func Signup(ctx echo.Context) error {
 
 func GetUser(ctx echo.Context) error {
 	name := ctx.Param("name")
-	u := new(model.Users)
+	u := new(model.User)
 
 	u.UserName = name
 	user := model.FindUser(u)
@@ -80,7 +80,7 @@ func GetUser(ctx echo.Context) error {
 }
 
 func UpdateUser(ctx echo.Context) error {
-	user := new(model.Users)
+	user := new(model.User)
 	if err := ctx.Bind(user); err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func UpdateUser(ctx echo.Context) error {
 }
 
 func DeleteUser(ctx echo.Context) error {
-	user := new(model.Users)
+	user := new(model.User)
 	uid, err := auth.AuthFirebase(ctx)
 	if err != nil {
 		return err

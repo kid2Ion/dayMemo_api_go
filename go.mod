@@ -1,5 +1,6 @@
 module github.com/hiroki-kondo-git/dayMemo_api_go
 
+// +heroku goVersion go1.17
 go 1.17
 
 require (

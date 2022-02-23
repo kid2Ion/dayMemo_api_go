@@ -38,9 +38,9 @@ func init() {
 		panic("error loading .env file")
 	}
 	ctx := context.Background()
-	firebasecredentials := Credentials{os.Getenv("FB_TYPE"), os.Getenv("FB_PROJECT_ID"), os.Getenv("FB_PRIVATE_KEY_ID"), os.Getenv("FB_PRIVATE_KEY"), os.Getenv("FB_CLIENT_EMAIL"), os.Getenv("FB_CLIENT_ID"), os.Getenv("FB_AUTH_URI"), os.Getenv("FB_TOKEN_URI"), os.Getenv("FB_AUTH_PROVIDER_X509_CERT_URL"), os.Getenv("FB_CLIENT_X509_CERT_URL")}
-	firebasecredentialsJSON, err := json.Marshal(firebasecredentials)
-	credentials, err := google.CredentialsFromJSON(ctx, []byte(firebasecredentialsJSON))
+	firebaseCredentials := Credentials{os.Getenv("FB_TYPE"), os.Getenv("FB_PROJECT_ID"), os.Getenv("FB_PRIVATE_KEY_ID"), os.Getenv("FB_PRIVATE_KEY"), os.Getenv("FB_CLIENT_EMAIL"), os.Getenv("FB_CLIENT_ID"), os.Getenv("FB_AUTH_URI"), os.Getenv("FB_TOKEN_URI"), os.Getenv("FB_AUTH_PROVIDER_X509_CERT_URL"), os.Getenv("FB_CLIENT_X509_CERT_URL")}
+	firebaseCredentialsJSON, err := json.Marshal(firebaseCredentials)
+	credentials, err := google.CredentialsFromJSON(ctx, []byte(firebaseCredentialsJSON))
 	if err != nil {
 		log.Panic(fmt.Errorf("error firebase credentials from json: %v\n", err))
 	}

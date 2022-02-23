@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/hiroki-kondo-git/dayMemo_api_go/auth"
 	"github.com/labstack/echo"
 	"google.golang.org/api/option"
 )
@@ -17,10 +20,12 @@ import (
 func UploadFile(bucket string, object string, imgBase64 string) error {
 	// bucket := "bucket-name"  storageのバケット名
 	// object := "object-neme"   アップロード後のファイル名、自分で決める
-	credentialFilePath := "./gcs-sdk.json"
+	// credentialFilePath := "./gcs-sdk.json"
 	ctx := context.Background()
-
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
+	storageCredentials := auth.Credentials{os.Getenv("ST_TYPE"), os.Getenv("ST_PROJECT_ID"), os.Getenv("ST_PRIVATE_KEY_ID"), os.Getenv("ST_PRIVATE_KEY"), os.Getenv("ST_CLIENT_EMAIL"), os.Getenv("ST_CLIENT_ID"), os.Getenv("ST_AUTH_URI"), os.Getenv("ST_TOKEN_URI"), os.Getenv("ST_AUTH_PROVIDER_X509_CERT_URL"), os.Getenv("ST_CLIENT_X509_CERT_URL")}
+	storageCredentialsJSON, err := json.Marshal(storageCredentials)
+	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(storageCredentialsJSON)))
+	// client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
 		return &echo.HTTPError{
 			Code:    http.StatusBadRequest,

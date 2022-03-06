@@ -11,7 +11,6 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
@@ -33,10 +32,10 @@ type Credentials struct {
 var client *auth.Client
 
 func init() {
-	err := godotenv.Load("env/local.env")
-	if err != nil {
-		panic("error loading .env file")
-	}
+	// err := godotenv.Load("env/local.env")
+	// if err != nil {
+	// 	panic("error loading .env file")
+	// }
 	ctx := context.Background()
 	firebaseCredentials := Credentials{os.Getenv("FB_TYPE"), os.Getenv("FB_PROJECT_ID"), os.Getenv("FB_PRIVATE_KEY_ID"), os.Getenv("FB_PRIVATE_KEY"), os.Getenv("FB_CLIENT_EMAIL"), os.Getenv("FB_CLIENT_ID"), os.Getenv("FB_AUTH_URI"), os.Getenv("FB_TOKEN_URI"), os.Getenv("FB_AUTH_PROVIDER_X509_CERT_URL"), os.Getenv("FB_CLIENT_X509_CERT_URL")}
 	firebaseCredentialsJSON, err := json.Marshal(firebaseCredentials)
